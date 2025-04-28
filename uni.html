@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Unicode→文字 変換ツール</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    textarea { width: 100%; box-sizing: border-box; }
+    button { margin-top: 0.5em; }
+    #output { margin-top: 1em; padding: 0.5em; border: 1px solid #ccc; min-height: 2em; }
+  </style>
+</head>
+<body>
+  <h1>Unicode → 文字</h1>
+  <p>コードポイントを「U+3042 3043」や「0x4E00,4E01」などで入力してください。</p>
+  <textarea id="input" rows="3" placeholder="例: U+3042 U+3044 0x4E00"></textarea><br>
+  <button id="decode">文字を表示</button>
+
+  <div id="output" aria-live="polite"></div>
+
+  <script>
+    document.getElementById('decode').addEventListener('click', () => {
+      const raw = document.getElementById('input').value.trim();
+      if (!raw) {
+        document.getElementById('output').textContent = '';
+        return;
+      }
+      // 空白・カンマで分割
+      const parts = raw.split(/[\s,]+/);
+      const chars = parts.map(token => {
+        // U+ や 0x を取り除き、16進数として解釈
+        const hex = token.replace(/^U\+/i,'').replace(/^0x/i,'');
+        const code = parseInt(hex, 16);
+        return isNaN(code) ? '?' : String.fromCodePoint(code);
+      });
+      document.getElementById('output').textContent = chars.join('');
+    });
+  </script>
+</body>
+</html>
